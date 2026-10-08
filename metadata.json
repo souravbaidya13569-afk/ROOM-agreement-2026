@@ -1,0 +1,6 @@
+{
+  "name": "Room Agreement",
+  "description": "Room Agreement and expense management application for October-December 2026 with real-time Firebase sync.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

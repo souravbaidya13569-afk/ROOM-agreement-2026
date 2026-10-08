@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidString(str, min, max) {
+      return str is string && str.size() >= min && str.size() <= max;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    match /members/{memberId} {
+      allow read: if true;
+      allow create: if isValidId(memberId)
+        && request.resource.data.name is string
+        && request.resource.data.mobile is string
+        && request.resource.data.role in ['Admin', 'Editor', 'Member'];
+      allow update: if isValidId(memberId);
+      allow delete: if isValidId(memberId);
+    }
+
+    match /expense/{expenseId} {
+      allow read: if true;
+      allow write: if isValidId(expenseId);
+    }
+
+    match /payments/{paymentId} {
+      allow read: if true;
+      allow write: if isValidId(paymentId);
+    }
+
+    match /history/{historyId} {
+      allow read: if true;
+      allow write: if isValidId(historyId);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

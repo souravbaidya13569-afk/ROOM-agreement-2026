@@ -1,0 +1,191 @@
+{
+  "entities": {
+    "Member": {
+      "title": "Member",
+      "description": "A room agreement member document representing a roommate and their bill responsibilities",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of member"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the roommate"
+        },
+        "mobile": {
+          "type": "string",
+          "description": "Mobile number used for login and identification"
+        },
+        "password": {
+          "type": "string",
+          "description": "Login password"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["Admin", "Editor", "Member"],
+          "description": "Assigned role: 1st user is Admin, next 2 are Editor, remaining up to 23 are Member"
+        },
+        "memberOrder": {
+          "type": "number",
+          "description": "Sequential join index (1 to 23)"
+        },
+        "paysRent": {
+          "type": "boolean",
+          "description": "Whether member is responsible for rent"
+        },
+        "paysWifi": {
+          "type": "boolean",
+          "description": "Whether member is responsible for WiFi bill"
+        },
+        "paysCurrent": {
+          "type": "boolean",
+          "description": "Whether member is responsible for current/electricity bill"
+        },
+        "paysOther": {
+          "type": "boolean",
+          "description": "Whether member is responsible for other miscellaneous bills"
+        },
+        "paidAmount": {
+          "type": "number",
+          "description": "Total amount paid by this member towards Oct-Dec 2026"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp string of member registration"
+        }
+      },
+      "required": ["id", "name", "mobile", "password", "role", "memberOrder", "paidAmount"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Agreement expenses for the active period (October-December 2026)",
+      "type": "object",
+      "properties": {
+        "period": {
+          "type": "string",
+          "description": "Agreement period string, e.g., October-December 2026"
+        },
+        "rent": {
+          "type": "number",
+          "description": "Total Rent amount for the room"
+        },
+        "currentBill": {
+          "type": "number",
+          "description": "Total electricity/current bill"
+        },
+        "wifi": {
+          "type": "number",
+          "description": "Total WiFi internet bill"
+        },
+        "other": {
+          "type": "number",
+          "description": "Total other miscellaneous room expenses"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Name or role of person who updated expenses"
+        }
+      },
+      "required": ["period", "rent", "currentBill", "wifi", "other"]
+    },
+    "PaymentLog": {
+      "title": "PaymentLog",
+      "description": "Individual payment transaction record",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Transaction ID"
+        },
+        "memberId": {
+          "type": "string",
+          "description": "Member ID who paid"
+        },
+        "memberName": {
+          "type": "string",
+          "description": "Member name"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Payment amount added"
+        },
+        "recordedBy": {
+          "type": "string",
+          "description": "Name of user who recorded the payment"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Payment timestamp"
+        },
+        "note": {
+          "type": "string",
+          "description": "Optional payment note"
+        }
+      },
+      "required": ["id", "memberId", "amount", "timestamp"]
+    },
+    "AgreementHistory": {
+      "title": "AgreementHistory",
+      "description": "Archived snapshot of an agreement period",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "History record ID"
+        },
+        "period": {
+          "type": "string",
+          "description": "Agreement period"
+        },
+        "totalExpense": {
+          "type": "number",
+          "description": "Total expense for the period"
+        },
+        "archivedAt": {
+          "type": "string",
+          "description": "Date archived"
+        },
+        "expenseSnapshot": {
+          "type": "object",
+          "description": "Expense breakdown snapshot"
+        },
+        "membersSnapshot": {
+          "type": "array",
+          "description": "Members summary list"
+        }
+      },
+      "required": ["id", "period", "totalExpense", "archivedAt"]
+    }
+  },
+  "firestore": {
+    "/members/{memberId}": {
+      "schema": {
+        "$ref": "#/entities/Member"
+      },
+      "description": "Room agreement members directory with role, bill assignments, and paid amounts"
+    },
+    "/expense/{expenseId}": {
+      "schema": {
+        "$ref": "#/entities/Expense"
+      },
+      "description": "Room agreement expenses. The active document is 'current'"
+    },
+    "/payments/{paymentId}": {
+      "schema": {
+        "$ref": "#/entities/PaymentLog"
+      },
+      "description": "Payment transactions history log"
+    },
+    "/history/{historyId}": {
+      "schema": {
+        "$ref": "#/entities/AgreementHistory"
+      },
+      "description": "Archived previous agreement periods and settlements"
+    }
+  }
+}
